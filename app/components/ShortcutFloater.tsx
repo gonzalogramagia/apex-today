@@ -1,0 +1,473 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Plus, X, Pencil, Trash2, Search, Image as ImageIcon, Link, FileText } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+
+type Position = 'left' | 'right'
+
+type Shortcut = {
+    id: string
+    name: string
+    iconUrl: string
+    url: string
+    position: Position
+}
+
+export default function ShortcutFloater() {
+    const [shortcuts, setShortcuts] = useState<Shortcut[]>([])
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [editingId, setEditingId] = useState<string | null>(null)
+    const [activeSide, setActiveSide] = useState<Position>('right')
+    const [areShortcutsVisible, setAreShortcutsVisible] = useState(true)
+
+    useEffect(() => {
+        const checkVisibility = () => {
+            const saved = localStorage.getItem('config-show-shortcuts')
+            setAreShortcutsVisible(saved !== 'false')
+        }
+        checkVisibility()
+        window.addEventListener('config-update', checkVisibility)
+        return () => window.removeEventListener('config-update', checkVisibility)
+    }, [])
+
+    const pathname = usePathname()
+    const isEnglish = pathname?.startsWith('/en')
+
+    // Presets
+    const PRESET_ICONS = [
+        { name: 'Music', url: 'https://cdn-icons-png.freepik.com/256/26/26805.png' },
+        { name: 'Video', url: 'https://img.icons8.com/ios_filled/1200/video.jpg' },
+        { name: 'Task', url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIXtf51YFPgubduv43sWdb8OZD9BxI_g3iOA&s' },
+        { name: 'Goal', url: 'https://img.icons8.com/ink/1200/goal.jpg' },
+        { name: 'Study', url: 'https://cdn-icons-png.flaticon.com/512/566/566944.png' },
+        { name: 'Trophy', url: 'https://static.vecteezy.com/system/resources/previews/059/907/959/non_2x/trophy-black-illustration-vector.jpg' },
+        { name: 'Linux', url: 'https://icon-library.com/images/linux-tux-icon/linux-tux-icon-1.jpg' },
+        { name: 'Job', url: 'https://static.vecteezy.com/system/resources/previews/021/839/489/non_2x/recruitment-black-glyph-icon-hiring-process-choosing-candidate-job-position-headhunting-application-silhouette-symbol-on-white-space-solid-pictogram-isolated-illustration-vector.jpg' },
+        { name: 'Link', url: 'https://marketplace.canva.com/wi4WI/MAFuGhwi4WI/1/tl/canva-url-link-icon-MAFuGhwi4WI.png' },
+        { name: 'Hobby', url: 'https://png.pngtree.com/png-vector/20190721/ourmid/pngtree-joystick-icon-for-your-project-png-image_1559232.jpg' },
+    ]
+
+    const t = {
+        editTitle: isEnglish ? 'Edit shortcut' : 'Editar atajo',
+        newTitle: isEnglish ? 'Add new shortcut' : 'Añadir nuevo atajo',
+        nameLabel: isEnglish ? 'Name' : 'Nombre',
+        iconUrlLabel: isEnglish ? 'Icon URL' : 'URL del Icono',
+        shortcutUrlLabel: isEnglish ? 'Shortcut URL' : 'URL del Atajo',
+        delete: isEnglish ? 'Delete' : 'Eliminar',
+        confirm: isEnglish ? 'Sure?' : 'Seguro?',
+        cancel: isEnglish ? 'Cancel' : 'Cancelar',
+        save: isEnglish ? 'Save' : 'Guardar',
+        addTooltip: isEnglish ? 'Add' : 'Añadir nuevo atajo',
+        editTooltip: isEnglish ? 'Edit' : 'Editar',
+        searchIconTooltip: isEnglish ? 'Search icon on Google' : 'Buscar ícono en Google',
+        chooseIconLabel: isEnglish ? 'Icon' : 'Ícono'
+    }
+
+    // Form state
+    const [name, setName] = useState('')
+    const [iconUrl, setIconUrl] = useState('')
+    const [url, setUrl] = useState('')
+    const [showIconPicker, setShowIconPicker] = useState(false)
+
+    useEffect(() => {
+        const loadShortcuts = () => {
+            const saved = localStorage.getItem('local-shortcuts')
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved)
+                    // Migrate existing shortcuts to have a position if missing
+                    const migrated = parsed.map((s: any) => ({
+                        ...s,
+                        position: s.position || 'right'
+                    }))
+                    setShortcuts(migrated)
+                } catch (e) {
+                    console.error('Failed to parse shortcuts', e)
+                }
+            }
+        }
+
+        loadShortcuts()
+
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'local-shortcuts') {
+                loadShortcuts()
+            }
+        }
+
+        window.addEventListener('storage', handleStorageChange)
+        return () => window.removeEventListener('storage', handleStorageChange)
+    }, [])
+
+    const saveShortcuts = (newShortcuts: Shortcut[]) => {
+        setShortcuts(newShortcuts)
+        localStorage.setItem('local-shortcuts', JSON.stringify(newShortcuts))
+    }
+
+    const [confirmDelete, setConfirmDelete] = useState(false)
+
+    const handleOpenModal = (side: Position, shortcut?: Shortcut) => {
+        setActiveSide(side)
+        if (shortcut) {
+            setEditingId(shortcut.id)
+            setName(shortcut.name)
+            setIconUrl(shortcut.iconUrl)
+            setUrl(shortcut.url)
+        } else {
+            setEditingId(null)
+            setName('')
+            setIconUrl('') // Cleared to ensure default logic in handleSubmit
+            setUrl('')
+        }
+        setShowIconPicker(false)
+        setConfirmDelete(false)
+        setIsModalOpen(true)
+    }
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+
+        const ensureUrl = (str: string) => {
+            if (!str) return ''
+            if (str.startsWith('http://') || str.startsWith('https://') || str.startsWith('data:')) return str
+            return `https://${str}`
+        }
+
+        const finalUrl = ensureUrl(url)
+        // Use user provided default or a safe fallback
+        const finalIconUrl = iconUrl ? ensureUrl(iconUrl) : 'https://cdn-icons-png.flaticon.com/512/1006/1006771.png'
+
+        if (editingId) {
+            const updated = shortcuts.map(s =>
+                s.id === editingId ? { ...s, name, iconUrl: finalIconUrl, url: finalUrl } : s
+            )
+            saveShortcuts(updated)
+        } else {
+            const newShortcut: Shortcut = {
+                id: crypto.randomUUID(),
+                name,
+                iconUrl: finalIconUrl,
+                url: finalUrl,
+                position: activeSide
+            }
+            saveShortcuts([...shortcuts, newShortcut])
+        }
+        setIsModalOpen(false)
+    }
+
+    const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value
+        setUrl(val)
+
+        // Simple domain extraction to try and get favicon
+        // Auto-fill if empty OR if it's already an auto-generated google favicon url
+        const isAutoGenerated = iconUrl.includes('google.com/s2/favicons')
+
+        if (!iconUrl || isAutoGenerated) {
+            try {
+                // Prepend https if needed for the URL object to work, though we clean it on submit
+                const urlObj = new URL(val.startsWith('http') ? val : `https://${val}`)
+                const domain = urlObj.hostname
+                // Only set if domain looks valid (has at least one dot, e.g. google.com)
+                if (domain.includes('.')) {
+                    setIconUrl(`https://www.google.com/s2/favicons?sz=64&domain=${domain}`)
+                }
+            } catch (e) {
+                // Invalid URL yet, ignore
+            }
+        }
+    }
+
+    const handleDelete = () => {
+        if (editingId) {
+            if (!confirmDelete) {
+                setConfirmDelete(true)
+                return
+            }
+            const updated = shortcuts.filter(s => s.id !== editingId)
+            saveShortcuts(updated)
+            setConfirmDelete(false)
+            setIsModalOpen(false)
+        }
+    }
+
+    const getGoogleImagesUrl = () => {
+        // Default search if name is empty, but preferably should warn or adjust
+        const query = name ? `${name} icon square 500x500` : 'app icon square 500x500'
+        return `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(query)}`
+    }
+
+    const sides: Position[] = ['left', 'right']
+
+    const handleShortcutClick = (e: React.MouseEvent, shortcut: Shortcut) => {
+        e.preventDefault()
+
+        const screenWidth = window.screen.availWidth
+        const screenHeight = window.screen.availHeight
+
+        const width = Math.round(screenWidth / 2)
+        const height = Math.round(screenHeight)
+
+        const left = shortcut.position === 'left' ? 0 : width
+        const top = 0
+
+        const openInTab = localStorage.getItem('config-open-in-new-tab') === 'true'
+
+        if (openInTab) {
+            window.open(shortcut.url, '_blank')
+        } else {
+            window.open(shortcut.url, '_self')
+        }
+    }
+
+    return (
+        <>
+            {/* Split View Iframe Overlay */}
+            {sides.map((side) => {
+                const isLeft = side === 'left'
+                // Mobile: Left is default top-7. Right is pushed down to top-20 to stack.
+                // Desktop: Left stays top-7 left-8. Right moves to top-7 right-8.
+                const positionClasses = isLeft
+                    ? 'top-7 left-8'
+                    : 'top-20 left-8 sm:top-7 sm:right-8 sm:left-auto'
+
+                return (
+                    <div
+                        key={side}
+                        className={`fixed ${positionClasses} flex items-center gap-2 z-50 transition-opacity duration-300 ${areShortcutsVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'} [&:hover>*:not(:hover)]:scale-75 [&:hover>*:not(:hover)]:grayscale [&:hover>*:not(:hover)]:opacity-70 ${!isLeft ? 'sm:flex-row-reverse' : ''}`}
+                    >
+                        {/* Add Button */}
+                        < button
+                            onClick={() => handleOpenModal(side)}
+                            className="flex items-center justify-center w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm opacity-50 hover:opacity-100 transition-all duration-300 hover:scale-110 hover:shadow-md cursor-pointer"
+                            title={t.addTooltip}
+                        >
+                            <Plus size={16} className="text-zinc-600" />
+                        </button >
+
+                        {/* Dynamic Shortcuts */}
+                        {
+                            shortcuts.filter(s => s.position === side).map(shortcut => (
+                                <div
+                                    key={shortcut.id}
+                                    className="group relative flex items-center justify-center w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-110 cursor-pointer overflow-visible"
+                                >
+                                    {/* Main Icon Button */}
+                                    <a
+                                        href={shortcut.url}
+                                        onClick={(e) => handleShortcutClick(e, shortcut)}
+                                        className="w-full h-full p-1 flex items-center justify-center rounded-full cursor-pointer"
+                                        role="button"
+                                        tabIndex={0}
+                                        draggable="true"
+                                    >
+                                        <img
+                                            src={shortcut.iconUrl}
+                                            alt={shortcut.name}
+                                            className="w-full h-full object-contain rounded-full"
+                                            onError={(e) => {
+                                                // Fallback if image fails
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                                (e.target as HTMLImageElement).parentElement!.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>'
+                                            }}
+                                        />
+                                    </a>
+
+                                    {/* Tooltip Name - Click to Edit */}
+                                    <div
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                            handleOpenModal(side, shortcut)
+                                        }}
+                                        className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 cursor-pointer hover:bg-zinc-800 flex flex-col items-center gap-0.5"
+                                        title={t.editTooltip}
+                                    >
+                                        {shortcut.name}
+                                        <Pencil size={8} className="text-zinc-400" />
+                                    </div>
+                                </div>
+                            ))
+                        }
+
+
+                    </div >
+                )
+            })}
+
+            {/* Modal */}
+            {
+                isModalOpen && (
+                    <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+                        <div className="bg-white rounded-lg shadow-xl w-full max-w-md border border-zinc-200 p-6 relative">
+                            {showIconPicker ? (
+                                <>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-lg font-medium">
+                                            {isEnglish ? 'Select Icon' : 'Seleccionar ícono'}
+                                        </h2>
+                                        <button
+                                            onClick={() => setShowIconPicker(false)}
+                                            className="text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                                        >
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+                                    <div className="grid grid-cols-5 gap-3 max-h-[300px] overflow-y-auto p-1">
+                                        {PRESET_ICONS.map((icon) => (
+                                            <button
+                                                key={icon.name}
+                                                onClick={() => {
+                                                    setIconUrl(icon.url)
+                                                    setShowIconPicker(false)
+                                                }}
+                                                className="group flex flex-col items-center gap-1 p-2 rounded-md hover:bg-zinc-100 transition-colors cursor-pointer"
+                                                title={icon.name}
+                                            >
+                                                <div className="w-8 h-8 flex items-center justify-center">
+                                                    <img
+                                                        src={icon.url}
+                                                        alt={icon.name}
+                                                        className="w-full h-full object-contain"
+                                                    />
+                                                </div>
+                                                <span className="text-[10px] text-zinc-500 truncate w-full text-center">{icon.name}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className="text-lg font-medium flex items-center gap-2">
+                                            <Link size={20} />
+                                            {editingId ? t.editTitle : t.newTitle}
+                                        </h2>
+                                        <button
+                                            onClick={() => setIsModalOpen(false)}
+                                            className="text-zinc-400 hover:text-zinc-600 cursor-pointer"
+                                        >
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+
+                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                        <div className="flex gap-3 sm:block sm:space-y-4">
+                                            <div className="flex-1 sm:w-full">
+                                                <label className="block text-sm font-medium text-zinc-700 mb-1">
+                                                    {t.nameLabel}
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    required
+                                                    value={name}
+                                                    onChange={e => setName(e.target.value)}
+                                                    className="w-full px-3 py-2 rounded-md border border-zinc-300 bg-white focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                                                    placeholder="Ej: ChatGPT"
+                                                />
+                                            </div>
+
+                                            <div className="w-auto sm:w-full">
+                                                <label className="block text-sm font-medium text-zinc-700 mb-1">
+                                                    <span className="sm:hidden">{t.chooseIconLabel}</span>
+                                                    <span className="hidden sm:block">{t.iconUrlLabel}</span>
+                                                </label>
+                                                <div className="flex gap-2 items-center">
+                                                    <div
+                                                        className="w-10 h-10 relative flex-shrink-0 rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 cursor-pointer hover:ring-2 hover:ring-zinc-400 transition-all flex items-center justify-center group/icon"
+                                                        onClick={() => setShowIconPicker(true)}
+                                                    >
+                                                        {iconUrl ? (
+                                                            <img
+                                                                src={iconUrl}
+                                                                alt="Preview"
+                                                                className="w-full h-full object-contain"
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).style.display = 'none';
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <div className="text-zinc-400 group-hover/icon:text-zinc-600 transition-colors">
+                                                                <ImageIcon size={20} />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <input
+                                                        type="text"
+                                                        value={iconUrl}
+                                                        onChange={e => setIconUrl(e.target.value)}
+                                                        className="hidden sm:block flex-1 px-3 py-2 rounded-md border border-zinc-300 bg-white focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                                                        placeholder="https://example.com/icon.png"
+                                                    />
+                                                    <a
+                                                        href={getGoogleImagesUrl()}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="hidden sm:flex h-10 px-3 bg-zinc-100 border border-zinc-300 rounded-md hover:bg-zinc-200 transition-colors items-center justify-center cursor-pointer"
+                                                        title={t.searchIconTooltip}
+                                                    >
+                                                        <Search size={18} className="text-zinc-600" />
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-zinc-700 mb-1">
+                                                {t.shortcutUrlLabel}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={url}
+                                                onChange={handleUrlChange}
+                                                className="w-full px-3 py-2 rounded-md border border-zinc-300 bg-white focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                                                placeholder="https://chat.openai.com"
+                                            />
+                                        </div>
+
+                                        <div className="flex justify-between items-center pt-2">
+                                            {editingId ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleDelete}
+                                                    className={`px-4 py-2 text-sm rounded-md transition-colors flex items-center gap-2 cursor-pointer ${confirmDelete
+                                                        ? 'bg-red-600 text-white hover:bg-red-700'
+                                                        : 'text-red-600 hover:bg-red-50'
+                                                        }`}
+                                                >
+                                                    <Trash2 size={16} />
+                                                    {confirmDelete ? t.confirm : t.delete}
+                                                </button>
+                                            ) : (
+                                                <div></div>
+                                            )}
+
+                                            <div className="flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsModalOpen(false)}
+                                                    className="px-4 py-2 text-sm text-zinc-600 hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
+                                                >
+                                                    {t.cancel}
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    className="px-4 py-2 text-sm text-white bg-[#6866D6] hover:bg-[#5856c4] rounded-md transition-opacity cursor-pointer"
+                                                >
+                                                    {t.save}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )
+            }
+        </>
+    )
+}
