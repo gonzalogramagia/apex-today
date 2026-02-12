@@ -68,7 +68,7 @@ export default function Countdown() {
 
     useEffect(() => {
         const checkVisibility = () => {
-            const saved = localStorage.getItem('config-show-countdown')
+            const saved = localStorage.getItem('config-show-timer')
             setIsVisible(saved !== 'false')
         }
         checkVisibility()

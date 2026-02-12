@@ -19,6 +19,7 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
     const [showClock, setShowClock] = useState(true);
     const [openInTab, setOpenInTab] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(true);
+    const [showTimer, setShowTimer] = useState(true);
 
     useEffect(() => {
         // Load initial state
@@ -27,12 +28,14 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
         const savedClock = localStorage.getItem('config-show-clock');
         const savedOpenInTab = localStorage.getItem('config-open-in-new-tab');
         const savedShortcuts = localStorage.getItem('config-show-shortcuts');
+        const savedTimer = localStorage.getItem('config-show-timer');
 
         setShowTasks(savedTasks !== 'false'); // Default true
         setShowCountdown(savedCountdown !== 'false'); // Default true
         setShowClock(savedClock !== 'false'); // Default true
         setOpenInTab(savedOpenInTab === 'true'); // Default false
         setShowShortcuts(savedShortcuts !== 'false'); // Default true
+        setShowTimer(savedTimer !== 'false'); // Default true
     }, []);
 
     const handleToggleTasks = () => {
@@ -67,6 +70,13 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
         const newValue = !showShortcuts;
         setShowShortcuts(newValue);
         localStorage.setItem('config-show-shortcuts', String(newValue));
+        window.dispatchEvent(new Event('config-update'));
+    };
+
+    const handleToggleTimer = () => {
+        const newValue = !showTimer;
+        setShowTimer(newValue);
+        localStorage.setItem('config-show-timer', String(newValue));
         window.dispatchEvent(new Event('config-update'));
     };
 
@@ -151,6 +161,27 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
                                     className="sr-only peer"
                                     checked={showCountdown}
                                     onChange={handleToggleCountdown}
+                                />
+                                <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#6866D6]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6866D6]"></div>
+                            </label>
+                        </div>
+
+                        {/* Real Countdown Toggle */}
+                        <div className="hidden lg:flex items-center justify-between p-3 bg-zinc-50 rounded-xl border border-zinc-100">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-white rounded-lg shadow-sm">
+                                    {showTimer ? <Eye size={20} className="text-zinc-600" /> : <EyeOff size={20} className="text-zinc-400" />}
+                                </div>
+                                <span className="font-medium text-zinc-900">
+                                    {lang === 'en' ? 'Countdown' : 'Cuenta Regresiva'}
+                                </span>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    className="sr-only peer"
+                                    checked={showTimer}
+                                    onChange={handleToggleTimer}
                                 />
                                 <div className="w-11 h-6 bg-zinc-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#6866D6]/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6866D6]"></div>
                             </label>
