@@ -67,7 +67,7 @@ export default function RootLayout({
         <ShortcutFloater />
 
         {/* Left Side Widgets */}
-        <div className="fixed left-9 top-48 z-40 hidden lg:flex flex-col gap-4 w-64">
+        <div className="fixed left-9 top-24 z-40 hidden lg:flex flex-col gap-4 w-64">
           <DailyTasks />
           <Countdown />
         </div>

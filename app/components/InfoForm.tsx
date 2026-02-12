@@ -5,6 +5,8 @@ import { Pencil, Check, Trash2 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 export default function InfoForm() {
+    const [clientName, setClientName] = useState('')
+    const [productId, setProductId] = useState('')
     const [mac, setMac] = useState('')
     const [name, setName] = useState('')
     const [cuit, setCuit] = useState('')
@@ -16,6 +18,10 @@ export default function InfoForm() {
     const [name2, setName2] = useState('')
     const [parts2, setParts2] = useState(['', '', '', '', '', ''])
 
+    // Ticket State
+    const [ticketId, setTicketId] = useState('')
+    const [ticketingSystem, setTicketingSystem] = useState('')
+
     const [mounted, setMounted] = useState(false)
     const [copiedField, setCopiedField] = useState<string | null>(null)
     const [isVisible, setIsVisible] = useState(true)
@@ -23,6 +29,8 @@ export default function InfoForm() {
     const isEnglish = pathname?.startsWith('/en')
 
     const partInputs = useRef<(HTMLInputElement | null)[]>([])
+    const clientNameInputRef = useRef<HTMLInputElement>(null)
+    const productIdInputRef = useRef<HTMLInputElement>(null)
     const nameInputRef = useRef<HTMLInputElement>(null)
     const cuitInputRef = useRef<HTMLInputElement>(null)
     const addressInputRef = useRef<HTMLInputElement>(null)
@@ -33,12 +41,22 @@ export default function InfoForm() {
     const nameInputRef2 = useRef<HTMLInputElement>(null)
     const fullMacInputRef2 = useRef<HTMLInputElement>(null)
 
+    // Ticket Refs
+    const ticketIdInputRef = useRef<HTMLInputElement>(null)
+    const ticketingSystemInputRef = useRef<HTMLInputElement>(null)
+
     // Editing states
-    const [editingField, setEditingField] = useState<'name' | 'full' | 'cuit' | 'address' | 'name2' | 'full2' | number | null>(null)
+    const [editingField, setEditingField] = useState<'clientName' | 'productId' | 'name' | 'full' | 'cuit' | 'address' | 'name2' | 'full2' | 'ticketId' | 'ticketingSystem' | number | null>(null)
 
     // Handle focus when editing starts
     useEffect(() => {
-        if (editingField === 'name') {
+        if (editingField === 'clientName') {
+            clientNameInputRef.current?.focus()
+            clientNameInputRef.current?.select()
+        } else if (editingField === 'productId') {
+            productIdInputRef.current?.focus()
+            productIdInputRef.current?.select()
+        } else if (editingField === 'name') {
             nameInputRef.current?.focus()
             nameInputRef.current?.select()
         } else if (editingField === 'full') {
@@ -61,11 +79,15 @@ export default function InfoForm() {
                 partInputs.current[editingField]?.focus()
                 partInputs.current[editingField]?.select()
             } else {
-                // Map indices 10-15 to 0-5 for the second array
-                const idx = editingField - 10
                 partInputs2.current[idx]?.focus()
                 partInputs2.current[idx]?.select()
             }
+        } else if (editingField === 'ticketId') {
+            ticketIdInputRef.current?.focus()
+            ticketIdInputRef.current?.select()
+        } else if (editingField === 'ticketingSystem') {
+            ticketingSystemInputRef.current?.focus()
+            ticketingSystemInputRef.current?.select()
         }
     }, [editingField])
 
@@ -81,6 +103,8 @@ export default function InfoForm() {
 
     useEffect(() => {
         setMounted(true)
+        const savedClientName = localStorage.getItem('info-client-name')
+        const savedProductId = localStorage.getItem('info-product-id')
         const savedMac = localStorage.getItem('mac-address-viewer')
         const savedName = localStorage.getItem('mac-address-name')
         const savedCuit = localStorage.getItem('info-cuit')
@@ -90,6 +114,13 @@ export default function InfoForm() {
         const savedMac2 = localStorage.getItem('mac-address-viewer-2')
         const savedName2 = localStorage.getItem('mac-address-name-2')
 
+        const savedTicketId = localStorage.getItem('info-ticket-id')
+        const savedTicketingSystem = localStorage.getItem('info-ticketing-system')
+
+        if (savedClientName) setClientName(savedClientName)
+        if (savedProductId) setProductId(savedProductId)
+        if (savedTicketId) setTicketId(savedTicketId)
+        if (savedTicketingSystem) setTicketingSystem(savedTicketingSystem)
         if (savedName) setName(savedName)
         if (savedCuit) setCuit(savedCuit)
         if (savedAddress) setAddress(savedAddress)
@@ -120,13 +151,17 @@ export default function InfoForm() {
 
     useEffect(() => {
         if (!mounted) return
+        localStorage.setItem('info-client-name', clientName)
+        localStorage.setItem('info-product-id', productId)
         localStorage.setItem('mac-address-viewer', mac)
         localStorage.setItem('mac-address-name', name)
         localStorage.setItem('info-cuit', cuit)
         localStorage.setItem('info-address', address)
         localStorage.setItem('mac-address-viewer-2', mac2)
         localStorage.setItem('mac-address-name-2', name2)
-    }, [mac, name, cuit, address, mac2, name2, mounted])
+        localStorage.setItem('info-ticket-id', ticketId)
+        localStorage.setItem('info-ticketing-system', ticketingSystem)
+    }, [clientName, productId, mac, name, cuit, address, mac2, name2, ticketId, ticketingSystem, mounted])
 
     const handleFullMacChange = (val: string) => {
         const clean = val.toUpperCase().replace(/[^0-9A-F]/g, '').slice(0, 12)
@@ -203,6 +238,8 @@ export default function InfoForm() {
     }
 
     const handleClear = () => {
+        setClientName('')
+        setProductId('')
         setMac('')
         setName('')
         setCuit('')
@@ -211,6 +248,8 @@ export default function InfoForm() {
         setMac2('')
         setName2('')
         setParts2(['', '', '', '', '', ''])
+        setTicketId('')
+        setTicketingSystem('')
     }
 
     const CopiedMessage = () => (
@@ -223,7 +262,7 @@ export default function InfoForm() {
     if (!mounted) return null
 
     return (
-        <div className={`fixed right-9 top-48 z-40 hidden lg:flex flex-col gap-4 w-72 transition-all duration-500 animate-in fade-in slide-in-from-right-4 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none select-none'}`}>
+        <div className={`fixed right-9 top-24 z-40 hidden lg:flex flex-col gap-4 w-72 transition-all duration-500 animate-in fade-in slide-in-from-right-4 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none select-none'}`}>
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-5 backdrop-blur-sm bg-white/90 dark:bg-zinc-900/90 hover:shadow-indigo-500/10 transition-shadow">
                 <div className="flex items-center justify-between mb-6">
                     <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm flex items-center gap-2">
@@ -248,7 +287,127 @@ export default function InfoForm() {
                     </div>
                 </div>
 
-                <div className="space-y-5">
+                <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-2">
+                    {/* Client Name Input */}
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex-shrink-0">
+                                {isEnglish ? 'CLIENT NAME:' : 'NOMBRE DEL CLIENTE:'}
+                            </label>
+                        </div>
+                        <div className="relative">
+                            <input
+                                ref={clientNameInputRef}
+                                type="text"
+                                value={clientName}
+                                onChange={(e) => setClientName(e.target.value)}
+                                onClick={(e) => {
+                                    if (editingField !== 'clientName') {
+                                        if (!clientName) {
+                                            setEditingField('clientName')
+                                            return
+                                        }
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        handleCopyText(clientName, 'clientName')
+                                    }
+                                }}
+                                onDoubleClick={() => setEditingField('clientName')}
+                                onBlur={() => setEditingField(null)}
+                                readOnly={editingField !== 'clientName'}
+                                placeholder={isEnglish ? 'Client name...' : 'Nombre del cliente...'}
+                                className={`w-full rounded-lg px-3 py-2 text-sm font-mono outline-none transition-all text-zinc-800 dark:text-zinc-200 cursor-pointer 
+                                    ${editingField === 'clientName'
+                                        ? 'bg-white dark:bg-zinc-800 border-2 border-indigo-500 ring-4 ring-indigo-500/10 shadow-lg scale-[1.02]'
+                                        : `bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 ${copiedField === 'clientName' ? 'border-green-500 text-green-600 dark:text-green-400' : 'hover:border-indigo-300 dark:hover:border-indigo-700/50'}`
+                                    }`}
+                            />
+                            {copiedField === 'clientName' && (
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-green-200 dark:border-green-900 shadow-sm animate-in fade-in zoom-in duration-200">
+                                    {isEnglish ? 'Copied!' : 'Copiado!'}
+                                    <Check size={12} className="text-green-500" />
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Ticket ID Input */}
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <div className="flex items-center gap-1.5 overflow-hidden w-full relative">
+                                <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex-shrink-0">
+                                    {isEnglish ? 'TICKET:' : 'TICKET:'}
+                                </label>
+                                <input
+                                    ref={ticketingSystemInputRef}
+                                    type="text"
+                                    value={ticketingSystem}
+                                    onChange={(e) => setTicketingSystem(e.target.value)}
+                                    onClick={() => {
+                                        if (editingField !== 'ticketingSystem') {
+                                            if (!ticketingSystem) {
+                                                setEditingField('ticketingSystem')
+                                                return
+                                            }
+                                            handleCopyText(ticketingSystem, 'ticketingSystem')
+                                        }
+                                    }}
+                                    onDoubleClick={() => setEditingField('ticketingSystem')}
+                                    onBlur={() => setEditingField(null)}
+                                    readOnly={editingField !== 'ticketingSystem'}
+                                    placeholder={isEnglish ? 'System...' : 'Sistema...'}
+                                    className={`bg-transparent border border-transparent p-0 text-[10px] font-bold text-indigo-500 uppercase tracking-wider outline-none w-full placeholder:text-zinc-300 dark:placeholder:text-zinc-700 cursor-pointer transition-all rounded px-1
+                                        ${editingField === 'ticketingSystem'
+                                            ? 'bg-white dark:bg-zinc-800 ring-2 ring-indigo-500/20 shadow-sm border-transparent'
+                                            : `hover:bg-indigo-50 dark:hover:bg-indigo-900/10 ${copiedField === 'ticketingSystem' ? 'border-green-500 text-green-600 dark:text-green-500' : ''}`}`
+                                    }
+                                />
+                                {copiedField === 'ticketingSystem' && (
+                                    <span className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[9px] font-bold text-green-600 bg-white dark:bg-zinc-900 px-1.5 py-0.5 rounded shadow-sm border border-green-100 dark:border-green-900/50">
+                                        {isEnglish ? 'Copied!' : 'Copiado!'}
+                                        <Check size={10} className="text-green-500" />
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                        <div className="relative">
+                            <input
+                                ref={ticketIdInputRef}
+                                type="text"
+                                value={ticketId}
+                                onChange={(e) => setTicketId(e.target.value)}
+                                onClick={(e) => {
+                                    if (editingField !== 'ticketId') {
+                                        if (!ticketId) {
+                                            setEditingField('ticketId')
+                                            return
+                                        }
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        handleCopyText(ticketId, 'ticketId')
+                                    }
+                                }}
+                                onDoubleClick={() => setEditingField('ticketId')}
+                                onBlur={() => setEditingField(null)}
+                                readOnly={editingField !== 'ticketId'}
+                                placeholder={isEnglish ? 'Ticket ID...' : 'ID de ticket...'}
+                                className={`w-full rounded-lg px-3 py-2 text-sm font-mono outline-none transition-all text-zinc-800 dark:text-zinc-200 cursor-pointer 
+                                    ${editingField === 'ticketId'
+                                        ? 'bg-white dark:bg-zinc-800 border-2 border-indigo-500 ring-4 ring-indigo-500/10 shadow-lg scale-[1.02]'
+                                        : `bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 ${copiedField === 'ticketId' ? 'border-green-500 text-green-600 dark:text-green-400' : 'hover:border-indigo-300 dark:hover:border-indigo-700/50'}`
+                                    }`}
+                            />
+                            {copiedField === 'ticketId' && (
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-green-200 dark:border-green-900 shadow-sm animate-in fade-in zoom-in duration-200">
+                                    {isEnglish ? 'Copied!' : 'Copiado!'}
+                                    <Check size={12} className="text-green-500" />
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+
+
                     {/* CUIT Input */}
                     <div>
                         <div className="flex items-center justify-between mb-1.5">
@@ -327,6 +486,49 @@ export default function InfoForm() {
                                     }`}
                             />
                             {copiedField === 'address' && (
+                                <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-green-200 dark:border-green-900 shadow-sm animate-in fade-in zoom-in duration-200">
+                                    {isEnglish ? 'Copied!' : 'Copiado!'}
+                                    <Check size={12} className="text-green-500" />
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Product ID Input */}
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex-shrink-0">
+                                {isEnglish ? 'PRODUCT ID:' : 'ID DE PRODUCTO:'}
+                            </label>
+                        </div>
+                        <div className="relative">
+                            <input
+                                ref={productIdInputRef}
+                                type="text"
+                                value={productId}
+                                onChange={(e) => setProductId(e.target.value)}
+                                onClick={(e) => {
+                                    if (editingField !== 'productId') {
+                                        if (!productId) {
+                                            setEditingField('productId')
+                                            return
+                                        }
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        handleCopyText(productId, 'productId')
+                                    }
+                                }}
+                                onDoubleClick={() => setEditingField('productId')}
+                                onBlur={() => setEditingField(null)}
+                                readOnly={editingField !== 'productId'}
+                                placeholder={isEnglish ? 'Product ID...' : 'ID de producto...'}
+                                className={`w-full rounded-lg px-3 py-2 text-sm font-mono outline-none transition-all text-zinc-800 dark:text-zinc-200 cursor-pointer 
+                                    ${editingField === 'productId'
+                                        ? 'bg-white dark:bg-zinc-800 border-2 border-indigo-500 ring-4 ring-indigo-500/10 shadow-lg scale-[1.02]'
+                                        : `bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 ${copiedField === 'productId' ? 'border-green-500 text-green-600 dark:text-green-400' : 'hover:border-indigo-300 dark:hover:border-indigo-700/50'}`
+                                    }`}
+                            />
+                            {copiedField === 'productId' && (
                                 <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[10px] font-bold text-green-600 bg-green-50 dark:bg-zinc-900 px-2 py-0.5 rounded-md border border-green-200 dark:border-green-900 shadow-sm animate-in fade-in zoom-in duration-200">
                                     {isEnglish ? 'Copied!' : 'Copiado!'}
                                     <Check size={12} className="text-green-500" />

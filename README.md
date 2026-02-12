@@ -9,6 +9,7 @@
 - **Instant Clipboard**: One-click copying for frequently used data like CUIT and Domicilio, with visual confirmation.
 - **Advanced MAC Formatter**: specialized input system that auto-segments 12-character strings into standard MAC format.
 - **Visual Feedback**: Real-time "COPIED" overlay animations on individual data segments ensure confidence in every action.
+- **Ticket Integration**: Dedicated fields for Ticketing System and Ticket ID, streamlining documentation workflow.
 - **Persistence**: All data entered is locally persisted, ensuring your workspace is ready exactly how you left it.
 
 ### 🚀 Efficiency & Navigation
@@ -18,8 +19,8 @@
 
 ### 🛠️ Operational Tools
 - **Daily Checklist**: A persistent interactive list to track mandatory daily tasks and operational verifications.
-- **Configurable Workspace**: Toggle visibility of modules (Clock, Tasks, Shortcuts) to focus on what matters.
-- **Time Management**: Integrated clock and calendar widgets to keep track of SLAs and shifts.
+- **Configurable Workspace**: Toggle visibility of modules (Clock, Tasks, Shortcuts, Countdown) to focus on what matters.
+- **Time Management**: Integrated clock, calendar, and countdown widgets to keep track of SLAs and shifts.
 
 ### 🖼️ Premium Visual Experience
 - **Glassmorphism Design**: A state-of-the-art interface using translucent materials, blurs, and curated color palettes in both Light and Dark variants.
