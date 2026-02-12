@@ -79,6 +79,7 @@ export default function InfoForm() {
                 partInputs.current[editingField]?.focus()
                 partInputs.current[editingField]?.select()
             } else {
+                const idx = editingField - 10
                 partInputs2.current[idx]?.focus()
                 partInputs2.current[idx]?.select()
             }
