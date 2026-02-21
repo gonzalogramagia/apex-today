@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Timer, Trash2, CalendarClock, Plus, Pencil, X } from 'lucide-react'
+import { Timer, Trash2, Plus, Pencil, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 
 interface CountdownItem {
@@ -20,6 +20,7 @@ export default function Countdown() {
     const pathname = usePathname()
     const isEnglish = pathname?.startsWith('/en')
     const containerRef = useRef<HTMLDivElement>(null)
+
 
     const handleSaveFixed = (e?: React.FormEvent, customData?: { name: string, date: string }) => {
         e?.preventDefault()
@@ -112,11 +113,6 @@ export default function Countdown() {
         return () => window.removeEventListener('storage', handleStorageChange)
     }, [])
 
-    useEffect(() => {
-        if (!mounted) return
-        localStorage.setItem('countdown-events', JSON.stringify(countdowns))
-    }, [countdowns, mounted])
-
     const handleDelete = (id: string) => {
         setCountdowns(countdowns.filter(c => c.id !== id))
     }
@@ -150,14 +146,20 @@ export default function Countdown() {
         setDraggedCountdownId(null)
     }
 
+    useEffect(() => {
+        if (!mounted) return
+        localStorage.setItem('countdown-events', JSON.stringify(countdowns))
+    }, [countdowns, mounted])
+
     if (!mounted) return null
 
     return (
         <div ref={containerRef} className={`flex flex-col gap-4 w-64 transition-opacity duration-500 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none select-none'}`}>
+            {/* Countdown Card */}
             <div className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-4 transition-all">
                 <div className="flex items-center justify-between mb-3" onClick={handleCloseEdit}>
                     <h3 className="font-medium text-zinc-900 dark:text-zinc-100 pt-1 text-sm flex items-center gap-2 cursor-default">
-                        <CalendarClock size={16} />
+                        <span className="text-base">🗓</span>
                         {isEnglish ? 'Countdown' : 'Cuenta Regresiva'}
                     </h3>
                     {countdowns.length < 2 && !editingId && (
