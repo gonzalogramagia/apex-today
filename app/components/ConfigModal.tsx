@@ -33,7 +33,7 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
         setShowTasks(savedTasks !== 'false'); // Default true
         setShowCountdown(savedCountdown !== 'false'); // Default true
         setShowClock(savedClock !== 'false'); // Default true
-        setOpenInTab(savedOpenInTab === 'true'); // Default false
+        setOpenInTab(savedOpenInTab !== 'false'); // Default true
         setShowShortcuts(savedShortcuts !== 'false'); // Default true
         setShowTimer(savedTimer !== 'false'); // Default true
     }, []);

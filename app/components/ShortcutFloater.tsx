@@ -212,7 +212,7 @@ export default function ShortcutFloater() {
         const left = shortcut.position === 'left' ? 0 : width
         const top = 0
 
-        const openInTab = localStorage.getItem('config-open-in-new-tab') === 'true'
+        const openInTab = localStorage.getItem('config-open-in-new-tab') !== 'false'
 
         if (openInTab) {
             window.open(shortcut.url, '_blank')

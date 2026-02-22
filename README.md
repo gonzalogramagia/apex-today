@@ -47,6 +47,13 @@ app/
   └── page.tsx              # Main entry point
 ```
 
+## 🌐 Quick Links
+- **Hoy**: You are here!
+- **Emojis**: Navigate to [Apex Emojis](https://apex.milemojis.com).
+- **Scripting**: Switch to the [Scripting](https://apex-private.onrender.com).
+- **Antipala**: Take a break and play [Antipala Pro](https://apex.antipala.pro).
+- **Moovimiento**: Energize with [Moovimiento](https://moovimiento.com).
+
 ## 🧩 Recommended Extensions
 To get the full experience and stay in the flow, I recommend this Chrome extension:
 

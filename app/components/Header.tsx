@@ -72,8 +72,8 @@ export default function Header({ lang, onAddNote, addNoteText, title, mobileAddT
             <img
                 src="/logo-apex-clean.png"
                 alt="Apex"
-                onClick={onAddNote}
-                className={`w-64 lg:w-72 h-auto object-contain select-none hover:scale-105 transition-transform duration-300 ${onAddNote ? 'cursor-pointer' : ''}`}
+                onClick={() => window.open('https://www.personal.com.ar/tech', '_blank')}
+                className="w-64 lg:w-72 h-auto object-contain select-none hover:scale-105 transition-transform duration-300 cursor-pointer"
             />
 
             {/* Desktop Content */}
