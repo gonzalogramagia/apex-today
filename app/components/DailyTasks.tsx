@@ -82,6 +82,14 @@ export default function DailyTasks() {
             }
         }
 
+        if (!savedTasks) {
+            parsedTasks = [{
+                id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                text: isEnglish ? 'First task of the day' : 'Primera tarea del día',
+                completed: false
+            }]
+        }
+
         // Check if reset is needed (if last reset was not today)
         if (lastReset !== today) {
             parsedTasks = parsedTasks.map(t => ({ ...t, completed: false }))
@@ -135,7 +143,7 @@ export default function DailyTasks() {
             setEditingId(null)
         } else {
             const newTask: Task = {
-                id: crypto.randomUUID(),
+                id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 text: inputValue.trim(),
                 url: urlValue.trim() || undefined,
                 completed: false

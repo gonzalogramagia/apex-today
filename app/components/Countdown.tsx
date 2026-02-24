@@ -32,7 +32,7 @@ export default function Countdown() {
             setEditingId(null)
         } else {
             if (countdowns.length >= 2) return
-            setCountdowns([...countdowns, { id: crypto.randomUUID(), ...data }])
+            setCountdowns([...countdowns, { id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(), ...data }])
             setIsCreating(false)
         }
         setFormData({ name: '', date: '' })
@@ -92,11 +92,24 @@ export default function Countdown() {
                 if (oldSaved) {
                     try {
                         const old = JSON.parse(oldSaved)
-                        const migrated = [{ id: crypto.randomUUID(), name: old.name, date: old.date }]
+                        const migrated = [{ id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(), name: old.name, date: old.date }]
                         setCountdowns(migrated)
                         localStorage.setItem('countdown-events', JSON.stringify(migrated))
                         localStorage.removeItem('countdown-event')
                     } catch (e) { }
+                } else {
+                    const futureDate = new Date()
+                    futureDate.setMinutes(futureDate.getMinutes() + 15)
+                    const tzoffset = (new Date()).getTimezoneOffset() * 60000
+                    const localISOTime = (new Date(futureDate.getTime() - tzoffset)).toISOString().slice(0, 16)
+                    const defaultCountdown = [{
+                        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+                        name: isEnglish ? 'My first countdown' : 'Mi primera cuenta regresiva',
+                        date: localISOTime
+                    }]
+                    setCountdowns(defaultCountdown)
+                    // Do not persist it to standard localStorage by default here unless requested, 
+                    // but since Countdown tracks it and auto-saves it in next effect, it will persist.
                 }
             }
         }
