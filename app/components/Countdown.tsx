@@ -104,7 +104,7 @@ export default function Countdown() {
                     const localISOTime = (new Date(futureDate.getTime() - tzoffset)).toISOString().slice(0, 16)
                     const defaultCountdown = [{
                         id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                        name: isEnglish ? 'My first countdown' : 'Mi primera cuenta regresiva',
+                        name: isEnglish ? 'Example: 15-min timer' : 'Ej: Evento en 15min',
                         date: localISOTime
                     }]
                     setCountdowns(defaultCountdown)

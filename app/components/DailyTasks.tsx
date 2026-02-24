@@ -85,7 +85,7 @@ export default function DailyTasks() {
         if (!savedTasks) {
             parsedTasks = [{
                 id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
-                text: isEnglish ? 'First task of the day' : 'Primera tarea del día',
+                text: isEnglish ? 'Example: First task' : 'Ejemplo: Primera tarea',
                 completed: false
             }]
         }

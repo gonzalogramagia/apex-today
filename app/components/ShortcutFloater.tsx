@@ -145,7 +145,7 @@ export default function ShortcutFloater() {
             saveShortcuts(updated)
         } else {
             const newShortcut: Shortcut = {
-                id: crypto.randomUUID(),
+                id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
                 name,
                 iconUrl: finalIconUrl,
                 url: finalUrl,

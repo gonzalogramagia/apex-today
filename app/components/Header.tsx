@@ -80,11 +80,15 @@ export default function Header({ lang, onAddNote, addNoteText, title, mobileAddT
             {showClock ? (
                 /* Clock + Add Button Container - Visible on Desktop when clock is enabled */
                 <div className="hidden lg:flex flex-col items-start justify-center gap-2 -mt-4 -ml-3 animate-in fade-in slide-in-from-top-4 duration-500 transition-opacity">
-                    <div className="flex flex-col items-start justify-start">
-                        <span className="text-6xl font-black font-mono tracking-tighter text-zinc-900 leading-none cursor-default select-none">
+                    <div
+                        className="flex flex-col items-start justify-start cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => window.open('https://anycalendar.org/', '_blank')}
+                        title="Open AnyCalendar"
+                    >
+                        <span className="text-6xl font-black font-mono tracking-tighter text-zinc-900 leading-none select-none">
                             {formatTime(currentTime)}
                         </span>
-                        <span className="text-lg text-zinc-500 font-medium cursor-default select-none">
+                        <span className="text-lg text-zinc-500 font-medium select-none">
                             {formatDate(currentTime)}
                         </span>
                     </div>
