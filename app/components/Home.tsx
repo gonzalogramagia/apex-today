@@ -75,29 +75,60 @@ export default function Home({ lang }: HomeProps) {
         if (savedBlocks) {
             try {
                 const parsed = JSON.parse(savedBlocks);
-                const migrated = (parsed as any[]).map((b) => {
-                    const tag =
-                        b && typeof b.tag === "string" && b.tag ? b.tag : generateId();
-                    const color = b && b.color ? b.color : "#FEFCE8";
-                    if (
-                        b &&
-                        typeof b.title === "string" &&
-                        /^Bloque [a-z0-9]{4}$/i.test(b.title)
-                    ) {
-                        return { ...b, title: "", tag, color };
-                    }
-                    return { ...b, tag, color };
-                });
-                setBlocks(migrated as TextBlock[]);
+                if (Array.isArray(parsed) && parsed.length === 0) {
+                    const makeId = () => Math.random().toString(36).substring(2, 6);
+                    setBlocks([{
+                        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : makeId(),
+                        tag: makeId(),
+                        title: "",
+                        content: "",
+                        color: "#FEFCE8",
+                    }]);
+                } else {
+                    const migrated = (parsed as any[]).map((b) => {
+                        const tag =
+                            b && typeof b.tag === "string" && b.tag ? b.tag : Math.random().toString(36).substring(2, 6);
+                        const color = b && b.color ? b.color : "#FEFCE8";
+                        if (
+                            b &&
+                            typeof b.title === "string" &&
+                            /^Bloque [a-z0-9]{4}$/i.test(b.title)
+                        ) {
+                            return { ...b, title: "", tag, color };
+                        }
+                        return { ...b, tag, color };
+                    });
+                    setBlocks(migrated as TextBlock[]);
+                }
             } catch (e) {
+                const makeId = () => Math.random().toString(36).substring(2, 6);
                 const raw = JSON.parse(savedBlocks) as any[];
-                const ensured = raw.map((b) => ({
-                    ...b,
-                    tag: b && b.tag ? b.tag : generateId(),
-                    color: b && b.color ? b.color : "#FEFCE8",
-                }));
-                setBlocks(ensured as TextBlock[]);
+                if (Array.isArray(raw) && raw.length === 0) {
+                    setBlocks([{
+                        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : makeId(),
+                        tag: makeId(),
+                        title: "",
+                        content: "",
+                        color: "#FEFCE8",
+                    }]);
+                } else {
+                    const ensured = raw.map((b) => ({
+                        ...b,
+                        tag: b && b.tag ? b.tag : makeId(),
+                        color: b && b.color ? b.color : "#FEFCE8",
+                    }));
+                    setBlocks(ensured as TextBlock[]);
+                }
             }
+        } else {
+            const makeId = () => Math.random().toString(36).substring(2, 6);
+            setBlocks([{
+                id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : makeId(),
+                tag: makeId(),
+                title: "",
+                content: "",
+                color: "#FEFCE8",
+            }]);
         }
 
         const savedTagColors = localStorage.getItem("localhost-tag-colors");
