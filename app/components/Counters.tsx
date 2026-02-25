@@ -55,11 +55,11 @@ export default function Counters() {
     ]
 
     return (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-4">
+        <div className="bg-white border border-zinc-200 rounded-lg shadow-lg p-4">
             <div className="flex items-center justify-between mb-3">
-                <h3 className="font-medium text-zinc-900 dark:text-zinc-100 text-sm flex items-center gap-2">
+                <h3 className="font-medium text-zinc-900 text-sm flex items-center gap-2">
                     <span className="text-base">📊</span>
-                    {isEnglish ? 'Counters' : 'Contadores'}
+                    {isEnglish ? 'Counters' : 'Contador diario'}
                 </h3>
                 <button
                     onClick={() => {
@@ -68,7 +68,7 @@ export default function Counters() {
                         setEmailsCount(0)
                         setWhatsappsCount(0)
                     }}
-                    className="text-[10px] font-bold text-zinc-400 hover:text-red-500 dark:hover:text-red-400 uppercase tracking-wider transition-colors cursor-pointer px-1.5 py-0.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20"
+                    className="text-[10px] font-bold text-zinc-400 hover:text-red-500 uppercase tracking-wider transition-colors cursor-pointer px-1.5 py-0.5 rounded hover:bg-red-50 /20"
                     title={isEnglish ? 'Reset all' : 'Resetear todo'}
                 >
                     Reset
@@ -76,24 +76,24 @@ export default function Counters() {
             </div>
             <div className="grid grid-cols-2 gap-2">
                 {counters.map(({ key, label, emoji, value, setter }) => (
-                    <div key={key} className="flex flex-col items-center gap-1 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-lg p-2">
-                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1">
+                    <div key={key} className="flex flex-col items-center gap-1 bg-zinc-50 /50 border border-zinc-200 /50 rounded-lg p-2">
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
                             <span>{emoji}</span> {label}
                         </span>
                         <div className="flex items-center gap-2 mt-0.5">
                             <button
                                 onClick={() => setter(v => Math.max(0, v - 1))}
-                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-red-50 hover:border-red-300 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:border-red-700 transition-all text-sm font-bold cursor-pointer shadow-sm"
+                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white border border-zinc-200 text-zinc-600 hover:bg-red-50 hover:border-red-300 hover:text-red-500 /20 transition-all text-sm font-bold cursor-pointer shadow-sm"
                                 aria-label={`Decrementar ${label}`}
                             >
                                 −
                             </button>
-                            <span className="text-xl font-bold text-zinc-900 dark:text-zinc-100 min-w-[2ch] text-center tabular-nums">
+                            <span className="text-xl font-bold text-zinc-900 min-w-[2ch] text-center tabular-nums">
                                 {value}
                             </span>
                             <button
                                 onClick={() => setter(v => v + 1)}
-                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 text-zinc-600 dark:text-zinc-300 hover:bg-green-50 hover:border-green-300 hover:text-green-600 dark:hover:bg-green-900/20 dark:hover:border-green-700 transition-all text-sm font-bold cursor-pointer shadow-sm"
+                                className="w-6 h-6 flex items-center justify-center rounded-md bg-white border border-zinc-200 text-zinc-600 hover:bg-green-50 hover:border-green-300 hover:text-green-600 /20 transition-all text-sm font-bold cursor-pointer shadow-sm"
                                 aria-label={`Incrementar ${label}`}
                             >
                                 +

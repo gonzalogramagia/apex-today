@@ -173,7 +173,7 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
                                     {showTimer ? <Eye size={20} className="text-zinc-600" /> : <EyeOff size={20} className="text-zinc-400" />}
                                 </div>
                                 <span className="font-medium text-zinc-900">
-                                    {lang === 'en' ? 'Countdown' : 'Cuenta Regresiva'}
+                                    {lang === 'en' ? 'Countdown' : 'Cuentas regresivas'}
                                 </span>
                             </div>
                             <label className="relative inline-flex items-center cursor-pointer">
@@ -233,27 +233,27 @@ export default function ConfigModal({ lang, onClose, toggleLanguage, exportPath,
 
                 {/* Export / Import Buttons */}
                 {/* Backup buttons hidden for now
-                <div className="hidden sm:grid grid-cols-2 gap-3 mt-6">
-                    <Link
-                        href={importPath}
-                        className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-50 border border-zinc-100 rounded-xl hover:bg-zinc-100 transition-all group cursor-pointer"
-                    >
-                        <FileDown size={24} className="text-zinc-500 group-hover:text-[#6866D6] transition-colors" />
-                        <span className="text-sm font-medium text-zinc-600 group-hover:text-zinc-900">
-                            {lang === 'en' ? 'Import Backup' : 'Importar Backup'}
-                        </span>
-                    </Link>
-                    <Link
-                        href={exportPath}
-                        className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-50 border border-zinc-100 rounded-xl hover:bg-zinc-100 transition-all group cursor-pointer"
-                    >
-                        <FileUp size={24} className="text-zinc-500 group-hover:text-[#6866D6] transition-colors" />
-                        <span className="text-sm font-medium text-zinc-600 group-hover:text-zinc-900">
-                            {lang === 'en' ? 'Export Backup' : 'Exportar Backup'}
-                        </span>
-                    </Link>
-                </div>
-                */}
+ <div className="hidden sm:grid grid-cols-2 gap-3 mt-6">
+ <Link
+ href={importPath}
+ className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-50 border border-zinc-100 rounded-xl hover:bg-zinc-100 transition-all group cursor-pointer"
+ >
+ <FileDown size={24} className="text-zinc-500 group-hover:text-[#6866D6] transition-colors" />
+ <span className="text-sm font-medium text-zinc-600 group-hover:text-zinc-900">
+ {lang === 'en' ? 'Import Backup' : 'Importar Backup'}
+ </span>
+ </Link>
+ <Link
+ href={exportPath}
+ className="flex flex-col items-center justify-center gap-2 p-4 bg-zinc-50 border border-zinc-100 rounded-xl hover:bg-zinc-100 transition-all group cursor-pointer"
+ >
+ <FileUp size={24} className="text-zinc-500 group-hover:text-[#6866D6] transition-colors" />
+ <span className="text-sm font-medium text-zinc-600 group-hover:text-zinc-900">
+ {lang === 'en' ? 'Export Backup' : 'Exportar Backup'}
+ </span>
+ </Link>
+ </div>
+ */}
             </div>
         </div>
     );
