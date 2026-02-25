@@ -3,5 +3,5 @@
 import Home from "../components/Home";
 
 export default function LocalPage() {
-  return <Home lang="es" />;
+ return <Home lang="es" />;
 }
