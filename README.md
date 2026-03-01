@@ -13,7 +13,7 @@
 - **Persistence**: All data entered is locally persisted, ensuring your workspace is ready exactly how you left it.
 
 ### 🚀 Efficiency & Navigation
-- **Floating Shortcut Dock**: A customizable, unobtrusive side-dock for quick access to internal scripts (Apex Scripting) and external tools (KnowB2B).
+- **Floating Shortcut Dock**: A customizable, unobtrusive side-dock for quick access to internal scripts (Apex Search) and external tools (KnowB2B).
 - **Custom Integration**: Add your own URL shortcuts with automatic icon fetching and categorization.
 - **Smart Layouts**: Responsive positioning allows shortcuts to adapt to your screen real estate, stacking cleanly on mobile or desktop.
 
@@ -50,7 +50,7 @@ app/
 ## 🌐 Quick Links
 - **Apex Today**: You are here!
 - **Apex Emojis**: Navigate to [Apex Emojis](https://apex.milemojis.com).
-- **Apex Scripting**: Switch to the [Scripting](https://apex-private.onrender.com).
+- **Apex Search**: Switch to the [Apex Search](https://apexsearch.vercel.app).
 - **Antipala Pro**: Take a break and play [Antipala Pro](https://apex.antipala.pro).
 - **Moovimiento**: Energize with [Moovimiento](https://moovimiento.com).
 
