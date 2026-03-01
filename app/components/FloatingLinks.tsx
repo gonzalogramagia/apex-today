@@ -30,6 +30,9 @@ export default function FloatingLinks({ lang }: FloatingLinksProps) {
 
 	const exportPath = lang === 'en' ? '/export' : '/exportar';
 	const importPath = lang === 'en' ? '/import' : '/importar';
+	const moovimientoUrl = lang === 'en' ? 'https://moovimiento.com/en' : 'https://moovimiento.com';
+	const milemojisUrl = lang === 'en' ? 'https://apex.milemojis.com/en' : 'https://apex.milemojis.com';
+	const antipalaUrl = lang === 'en' ? 'https://apex.antipala.pro/en' : 'https://apex.antipala.pro';
 
 
 	const toggleLanguage = () => {
@@ -48,7 +51,7 @@ export default function FloatingLinks({ lang }: FloatingLinksProps) {
 			<div className="fixed bottom-8 right-8 flex gap-3 z-[70]">
 
 				<a
-					href="https://moovimiento.com"
+					href={moovimientoUrl}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="p-3 bg-white border border-zinc-200 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 group cursor-pointer"
@@ -80,7 +83,7 @@ export default function FloatingLinks({ lang }: FloatingLinksProps) {
 				</div>
 				{/* 2 - Botón Emojis (Habilitado) */}
 				<a
-					href="https://apex.milemojis.com"
+					href={milemojisUrl}
 					className="p-3 bg-white border border-zinc-200 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 group cursor-pointer"
 					aria-label="Emojis"
 				>
@@ -101,7 +104,7 @@ export default function FloatingLinks({ lang }: FloatingLinksProps) {
 				</a>
 				{/* 4 - Botón que se contrae (Ej. Antipala) - Fíjate en los 'peer-hover:...' */}
 				<a
-					href="https://apex.antipala.pro"
+					href={antipalaUrl}
 					className="p-3 bg-white border border-zinc-200 rounded-full shadow-lg hover:shadow-xl overflow-hidden transition-all duration-300 peer-hover:w-0 peer-hover:p-0 peer-hover:border-0 peer-hover:opacity-0 peer-hover:ml-[-12px] group cursor-pointer flex items-center justify-center shrink-0"
 					aria-label="Antipala"
 				>
